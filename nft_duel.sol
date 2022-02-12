@@ -58,7 +58,7 @@ contract Galaxy_heroes is ERC1155{
 
     function unstake(uint id) public isStaked(id) isNftOwner(id){
         //lockup time period
-        require(block.timestamp > tokenId_stakeTimeEnd[id]);
+        require(block.timestamp > tokenId_stakeTimeEnd[id],"Need more time!");
         heroTokenId_ToNFT[id].staked = false;
         _mint(msg.sender, coin,100000000,"");
     }
@@ -68,7 +68,7 @@ contract Galaxy_heroes is ERC1155{
     
     function create() internal{
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
-      hero_collection.push(NFT("Dark_Magician","img1",6,false,));
+      hero_collection.push(NFT("Dark_Magician","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
@@ -121,7 +121,7 @@ contract Galaxy_heroes is ERC1155{
     }
     //staked - lockup time period
     function getStakedTimedLeft(uint id) public view returns(uint timeLeft){
-        return tokenId_stakeTimeEnd[id];
+        return tokenId_stakeTimeEnd[id] - block.timestamp;
     }
     //names
     function getNFT_item_name(uint id) public view returns(string memory name){
@@ -137,7 +137,5 @@ contract Galaxy_heroes is ERC1155{
     function getNFT_hero_stars(uint id) public view returns(uint stars){
         return heroTokenId_ToNFT[id].stars;
     }
-    
-    
 
 }
