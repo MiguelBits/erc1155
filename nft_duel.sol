@@ -14,8 +14,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract Galaxy_heroes is ERC1155{
     
     //CONSTANTS
-    uint constant hero = 1;
-    uint constant item = 1;
+    uint constant private hero = 1;
+    uint constant private item = 1;
+    uint constant private coin = 100000;
 
     //NFT associated with a heroTokenId_
     mapping(uint256 => NFT) public heroTokenId_ToNFT;
@@ -27,15 +28,15 @@ contract Galaxy_heroes is ERC1155{
     mapping(address => uint[]) public NFTsAtAddress;
 
     modifier isNotStaked(uint id){
-        require(getNFT_hero_staked(id) == false);
+        require(getNFT_hero_staked(id) == false,"UnStake is required for this tx");
         _;
     }
     modifier isStaked(uint id){
-        require(getNFT_hero_staked(id) == true);
+        require(getNFT_hero_staked(id) == true,"Stake is required for this tx");
         _;
     }
     modifier isNftOwner(uint id){
-        require(heroTokenId_ToOwner[id] == msg.sender);
+        require(heroTokenId_ToOwner[id] == msg.sender, "You are not the owner of this Hero!");
         _;
     }
 
@@ -53,7 +54,7 @@ contract Galaxy_heroes is ERC1155{
 
     function unstake(uint id) public isStaked(id) isNftOwner(id){
         heroTokenId_ToNFT[id].staked = false;
-        heroTokenId_ToNFT[id].stars += 1;
+        _mint(msg.sender, coin,100000000,"");
     }
     //CREATION
     //create decks / boosters
@@ -81,7 +82,7 @@ contract Galaxy_heroes is ERC1155{
 
     //MINTERS
     //function to use random Number TODO
-    function finishMint(uint i) public {        
+    function heroMint(uint i) public {        
         _mint(msg.sender, hero,1,"");
 
         heroTokenId_ToNFT[hero] = hero_collection[i];
@@ -90,11 +91,15 @@ contract Galaxy_heroes is ERC1155{
         
     }
     function itemMint() public{
-        require(balanceOf(msg.sender,hero) > 0,"you need have a Mine");
+        require(balanceOf(msg.sender,hero) > 0,"you need have a Heroe");
         _mint(msg.sender, item,1,"");
     }
 
     //GETS
+    //account specific
+    function coinBalance() public view returns(uint coins){
+        return balanceOf(msg.sender,coin);
+    }
     function nftAccount() public view returns(uint[] memory arr){
         return NFTsAtAddress[msg.sender];
     }
@@ -106,16 +111,17 @@ contract Galaxy_heroes is ERC1155{
     function getNFT_item_name(uint id) public view returns(string memory name){
         return itemTokenId_ToNFT[id].name;
     }
-    function getNFT_hero_name(uint id) public view returns(bool name){
+    function getNFT_hero_name(uint id) public view returns(string memory name){
         return heroTokenId_ToNFT[id].name;
     }
     //stars
-    function getNFT_item_stars(uint id) public view returns(string memory stars){
+    function getNFT_item_stars(uint id) public view returns(uint stars){
         return itemTokenId_ToNFT[id].stars;
     }
-    function getNFT_hero_stars(uint id) public view returns(bool stars)
+    function getNFT_hero_stars(uint id) public view returns(uint stars){
         return heroTokenId_ToNFT[id].stars;
     }
+    
     
 
 }
