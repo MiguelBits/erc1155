@@ -11,12 +11,11 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Dark_Girls is ERC1155{
+contract Star_heroes is ERC1155{
     
     //CONSTANTS
-    using Counters for Counters.Counter;    
-    Counters.Counter private _heroesTokenId_Counter;
-    Counters.Counter private _itemTokenId_Counter;
+    uint constant hero = 1;
+    uint constant item = 1;
 
     //NFT associated with a heroTokenId_
     mapping(uint256 => NFT) public heroTokenId_ToNFT;
@@ -27,16 +26,16 @@ contract Dark_Girls is ERC1155{
 
     mapping(address => uint[]) public NFTsAtAddress;
 
-    modifier isNotStaked(uint heroTokenId_){
-        require(heroesTokenId_ToNFT[heroesTokenId_].staked == false);
+    modifier isNotStaked(uint id){
+        require(getNFT_hero_staked(id) == false);
         _;
     }
-    modifier isStaked(uint heroTokenId_){
-        require(heroesTokenId_ToNFT[heroesTokenId_].staked == true);
+    modifier isStaked(uint id){
+        require(getNFT_hero_staked(id) == true);
         _;
     }
-    modifier isNftOwner(uint heroTokenId_){
-        require(heroesTokenId_ToOwner[heroesTokenId_] == msg.sender);
+    modifier isNftOwner(uint id){
+        require(heroTokenId_ToOwner[id] == msg.sender);
         _;
     }
 
@@ -47,68 +46,63 @@ contract Dark_Girls is ERC1155{
         bool staked;
     }
 
-    function stake(uint heroTokenId_) public isNotStaked(heroesTokenId_) isNftOwner(heroesTokenId_){
-        heroTokenId_ToNFT[heroesTokenId_].staked = true;
-        heroTokenId_ToNFT[heroesTokenId_].stars += 1;
+    function stake(uint id) public isNotStaked(id) isNftOwner(id){
+        heroTokenId_ToNFT[id].staked = true;
+        heroTokenId_ToNFT[id].stars += 1;
     }
 
-    function unstake(uint heroTokenId_) public isStaked(heroesTokenId_) isNftOwner(heroesTokenId_){
-        heroTokenId_ToNFT[heroesTokenId_].staked = false;
-        heroTokenId_ToNFT[heroesTokenId_].stars += 1;
+    function unstake(uint id) public isStaked(id) isNftOwner(id){
+        heroTokenId_ToNFT[id].staked = false;
+        heroTokenId_ToNFT[id].stars += 1;
     }
     //CREATION
     //create decks / boosters
     //nft on chain
-    NFT[] yugi_deck;
+    NFT[] hero_collection;
     
     function create() internal{
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
-      yugi_deck.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Girl","img1",6,false));
     }
 
 
-    constructor() public ERC1155("https://raw.githubusercontent.com/mcruzvas/react_web3/main/metadata/{id}.json") {
+    constructor() ERC1155("https://raw.githubusercontent.com/mcruzvas/react_web3/main/metadata/{id}.json") {
         create();
-
-        _heroesTokenId_Counter.increment();
-        _itemTokenId_Counter.increment();
-
         //no of NFTs in deployed in the blockchain
     }
 
     //MINTERS
     //function to use random Number TODO
-    function finishMint(uint i) public {
-        uint heroTokenId_ = _heroesTokenId_Counter.current();
-        
-        _mint(msg.sender, heroTokenId_,1,"");
+    function finishMint(uint i) public {        
+        _mint(msg.sender, hero,1,"");
 
-        heroTokenId_ToNFT[heroesTokenId_] = yugi_deck[i];
-        NFTsAtAddress[msg.sender].push(heroesTokenId_);
-        heroTokenId_ToOwner[heroesTokenId_] = msg.sender;
-        _heroesTokenId_Counter.increment();
+        heroTokenId_ToNFT[hero] = hero_collection[i];
+        NFTsAtAddress[msg.sender].push(hero);
+        heroTokenId_ToOwner[hero] = msg.sender;
+        
     }
     function itemMint() public{
-        uint itemTokenId_ = _itemTokenId_Counter.current();
+        require(balanceOf(msg.sender,hero) > 0,"you need have a Mine");
+        _mint(msg.sender, item,1,"");
     }
 
     //GETS
     function nftAccount() public view returns(uint[] memory arr){
         return NFTsAtAddress[msg.sender];
     }
-    function getNFT(uint heroTokenId_) public view returns(string memory name){
-        return heroTokenId_ToNFT[heroesTokenId_].name;
+    function getNFT_hero_staked(uint id) public view returns(bool hero_staked){
+        return heroTokenId_ToNFT[id].staked;
     }
-    function getNFT(uint itemTokenId_) public view returns(string memory name){
-        return itemTokenId_ToNFT[itemTokenId_].name;
+    function getNFT_item_name(uint id) public view returns(string memory name){
+        return itemTokenId_ToNFT[id].name;
     }
 
 }
