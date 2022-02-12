@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-
-
 // Helper we wrote to encode in Base64
 import "./Base64.sol";
 // NFT contract to inherit from.
@@ -14,9 +12,11 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract Galaxy_heroes is ERC1155{
     
     //CONSTANTS
-    uint constant private hero = 1;
-    uint constant private item = 1;
     uint constant private coin = 100000;
+    using Counters for Counters.Counter;
+    Counters.Counter private _heroTokenIds;
+    Counters.Counter private _itemTokenIds;
+
 
     //NFT associated with a heroTokenId_
     mapping(uint256 => NFT) public heroTokenId_ToNFT;
@@ -77,22 +77,29 @@ contract Galaxy_heroes is ERC1155{
 
     constructor() ERC1155("https://raw.githubusercontent.com/mcruzvas/react_web3/main/metadata/{id}.json") {
         create();
-        //no of NFTs in deployed in the blockchain
+        _heroTokenIds.increment();
+        _itemTokenIds.increment();
     }
 
     //MINTERS
     //function to use random Number TODO
-    function heroMint(uint i) public {        
-        _mint(msg.sender, hero,1,"");
+    function heroMint(uint i) public {   
+        uint tokenId = _heroTokenIds.current();
+     
+        _mint(msg.sender, tokenId,1,"");
 
-        heroTokenId_ToNFT[hero] = hero_collection[i];
-        NFTsAtAddress[msg.sender].push(hero);
-        heroTokenId_ToOwner[hero] = msg.sender;
+        heroTokenId_ToNFT[tokenId] = hero_collection[i];
+        NFTsAtAddress[msg.sender].push(tokenId);
+        heroTokenId_ToOwner[tokenId] = msg.sender;
+        _heroTokenIds.increment();
         
     }
     function itemMint() public{
-        require(balanceOf(msg.sender,hero) > 0,"you need have a Heroe");
-        _mint(msg.sender, item,1,"");
+        uint tokenId = _itemTokenIds.current();
+
+        require(balanceOf(msg.sender,tokenId) > 0,"you need have a Heroe");
+        _mint(msg.sender, tokenId,1,"");
+        _itemTokenIds.increment();
     }
 
     //GETS
