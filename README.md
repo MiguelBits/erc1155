@@ -1,4 +1,4 @@
 # erc1155
 ## List of components coded:
--> Staking
+-> Staking   
 -> item / heroes
