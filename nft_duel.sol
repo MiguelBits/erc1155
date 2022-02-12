@@ -62,7 +62,7 @@ contract Galaxy_heroes is ERC1155{
     
     function create() internal{
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
-      hero_collection.push(NFT("Dark_Girl","img1",6,false));
+      hero_collection.push(NFT("Dark_Magician","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
@@ -98,11 +98,24 @@ contract Galaxy_heroes is ERC1155{
     function nftAccount() public view returns(uint[] memory arr){
         return NFTsAtAddress[msg.sender];
     }
+    //staked
     function getNFT_hero_staked(uint id) public view returns(bool hero_staked){
         return heroTokenId_ToNFT[id].staked;
     }
+    //names
     function getNFT_item_name(uint id) public view returns(string memory name){
         return itemTokenId_ToNFT[id].name;
     }
+    function getNFT_hero_name(uint id) public view returns(bool name){
+        return heroTokenId_ToNFT[id].name;
+    }
+    //stars
+    function getNFT_item_stars(uint id) public view returns(string memory stars){
+        return itemTokenId_ToNFT[id].stars;
+    }
+    function getNFT_hero_stars(uint id) public view returns(bool stars)
+        return heroTokenId_ToNFT[id].stars;
+    }
+    
 
 }
