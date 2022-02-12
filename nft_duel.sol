@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract Star_heroes is ERC1155{
+contract Galaxy_heroes is ERC1155{
     
     //CONSTANTS
     uint constant hero = 1;
