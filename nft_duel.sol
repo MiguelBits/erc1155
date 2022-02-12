@@ -17,8 +17,7 @@ contract Galaxy_heroes is ERC1155{
     Counters.Counter private _heroTokenIds;
     Counters.Counter private _itemTokenIds;
 
-
-    //NFT associated with a heroTokenId_
+    //NFT associated with a TokenId_                    MAPPINGS
     mapping(uint256 => NFT) public heroTokenId_ToNFT;
     mapping(uint256 => NFT) public itemTokenId_ToNFT;
 
@@ -26,7 +25,9 @@ contract Galaxy_heroes is ERC1155{
     mapping(uint => address) public itemTokenId_ToOwner;
 
     mapping(address => uint[]) public NFTsAtAddress;
+    mapping(uint => uint) public tokenId_stakeTimeEnd;
 
+    //MODIFIERS
     modifier isNotStaked(uint id){
         require(getNFT_hero_staked(id) == false,"UnStake is required for this tx");
         _;
@@ -39,7 +40,7 @@ contract Galaxy_heroes is ERC1155{
         require(heroTokenId_ToOwner[id] == msg.sender, "You are not the owner of this Hero!");
         _;
     }
-
+    //STRUCT
     struct NFT{
         string name;
         string imageURI;  
@@ -47,23 +48,27 @@ contract Galaxy_heroes is ERC1155{
         bool staked;
     }
 
+    //STAKE
     function stake(uint id) public isNotStaked(id) isNftOwner(id){
         heroTokenId_ToNFT[id].staked = true;
         heroTokenId_ToNFT[id].stars += 1;
+        //lockup time period
+        tokenId_stakeTimeEnd[id] = block.timestamp + 60;
     }
 
     function unstake(uint id) public isStaked(id) isNftOwner(id){
+        //lockup time period
+        require(block.timestamp > tokenId_stakeTimeEnd[id]);
         heroTokenId_ToNFT[id].staked = false;
         _mint(msg.sender, coin,100000000,"");
     }
+
     //CREATION
-    //create decks / boosters
-    //nft on chain
     NFT[] hero_collection;
     
     function create() internal{
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
-      hero_collection.push(NFT("Dark_Magician","img1",6,false));
+      hero_collection.push(NFT("Dark_Magician","img1",6,false,));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
       hero_collection.push(NFT("Dark_Girl","img1",6,false));
@@ -113,6 +118,10 @@ contract Galaxy_heroes is ERC1155{
     //staked
     function getNFT_hero_staked(uint id) public view returns(bool hero_staked){
         return heroTokenId_ToNFT[id].staked;
+    }
+    //staked - lockup time period
+    function getStakedTimedLeft(uint id) public view returns(uint timeLeft){
+        return tokenId_stakeTimeEnd[id];
     }
     //names
     function getNFT_item_name(uint id) public view returns(string memory name){
