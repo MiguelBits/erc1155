@@ -94,11 +94,11 @@ contract Galaxy_heroes is ERC1155{
     NFT[] hero_collection;
     function create() internal{
       //Hero
-      hero_collection.push(NFT(Hero_Class.SUPERHUMAN,Sex.FEM,6,1000,false));
+      hero_collection.push(NFT(Hero_Class.DARKLINK,Sex.FEM,6,1000,false));
       hero_collection.push(NFT(Hero_Class.ALIEN,Sex.MALE,1,100,false));
     }
 
-    constructor() ERC1155("https://raw.githubusercontent.com/mcruzvas/react_web3/main/metadata/{id}.json") {
+    constructor() ERC1155("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/") {
         create();
         _heroTokenIds.increment();
         _itemTokenIds = 0;
@@ -249,20 +249,13 @@ contract Galaxy_heroes is ERC1155{
 
         //if(item.)
     }
-    //TODO URI
-    function uri(uint256 tokenId) public view override returns (string memory) {
-        string memory json = Base64.encode(
-            abi.encodePacked(
-                "{'name': 'Galaxy Duelist #",Strings.toString(tokenId),"'",
-                "}"
-            
-            )
-        );
-
-        string memory output = string(
-            abi.encodePacked("data:application/json;base64,", json)
-        );
-        //console.log(output);
-        return output;
+    //TODO
+    function uri(uint256 id) public view override returns (string memory) {
+        string memory where = Strings.toString(id);
+        return string( abi.encodePacked( super.uri(id),where ,".json"));
+    }
+        //TODO
+    function getUri(uint256 id) public view returns (string memory) {
+        return string( abi.encodePacked( super.uri(id) ));
     }
 }
