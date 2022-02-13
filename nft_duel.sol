@@ -12,11 +12,10 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract Galaxy_heroes is ERC1155{
     
     //ENUM
-    enum Hero_Class{SUPERHUMAN, ALIEN, ANIMAL, DARKLINK, ROBOT, GOD}
-    enum Sex{MALE,FEM}
+    enum Hero_Class{ROBOT, GOD, SUPERHUMAN, ALIEN, ANIMAL, DARKLINK}
     enum Item_Class{POTION, HERB, MYSTIC, WEAPON, MINERIUM, NOVA}
     enum Item_Rarity{RED,PURPLE,PINK,BLUE,GREEN,WHITE}
-
+    
     //CONSTANTS
     uint constant private coin = 100000;
     uint constant private itemPotion = 0;
@@ -26,12 +25,14 @@ contract Galaxy_heroes is ERC1155{
     uint constant private itemMinerium = 4;
     uint constant private itemNova = 5;
 
+    NFT[] public hero_collection;
     using Counters for Counters.Counter;
     Counters.Counter private _heroTokenIds;
     uint private _itemTokenIds;
-    address admin;
+    address private admin;
 
     //NFT associated with a TokenId_            MAPPINGS
+    mapping(Hero_Class => Counters.Counter) heroClass_amountMinted;
     mapping(uint256 => string) private _tokenURIs;
     mapping(uint256 => NFT) public heroTokenId_ToNFT;
     //nft to owner
@@ -69,7 +70,6 @@ contract Galaxy_heroes is ERC1155{
     //STRUCT
     struct NFT{
         Hero_Class class;
-        Sex sex;
         uint stars;
         uint attack;
         bool staked;
@@ -91,15 +91,7 @@ contract Galaxy_heroes is ERC1155{
     }
     
     //CREATION
-    NFT[] hero_collection;
-    function create() internal{
-      //Hero
-      hero_collection.push(NFT(Hero_Class.DARKLINK,Sex.FEM,6,1000,false));
-      hero_collection.push(NFT(Hero_Class.ALIEN,Sex.MALE,1,100,false));
-    }
-
     constructor() ERC1155("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/") {
-        create();
         _heroTokenIds.increment();
         _itemTokenIds = 0;
         admin = msg.sender;
@@ -107,19 +99,133 @@ contract Galaxy_heroes is ERC1155{
 
     //MINTERS
     //HERO
-    // to use random Number TODO
-    function heroMint(uint i) external {   
+    // robot
+    function heroMint_Robot() external {   
         // e.g. the buyer wants 100 tokens, needs to send 500 wei
         //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
-          
+        uint class_id = heroClass_amountMinted[Hero_Class.ROBOT].current();
+
         uint tokenId = _heroTokenIds.current();
-     
+        string memory where = Strings.toString(class_id);
+
         _mint(msg.sender, tokenId,1,"");
 
-        heroTokenId_ToNFT[tokenId] = hero_collection[i];
+        _setURI(string( abi.encodePacked( super.uri(tokenId),"Robot/","1",where ,".json")));
+        NFT memory new_hero = NFT(Hero_Class.ROBOT,1,100,false);
+        hero_collection.push(new_hero);
+        heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
         _heroTokenIds.increment();
+
+        heroClass_amountMinted[Hero_Class.ROBOT].increment();
+        
+    }
+    // god
+    function heroMint_God() external {   
+        // e.g. the buyer wants 100 tokens, needs to send 500 wei
+        //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
+        uint class_id = heroClass_amountMinted[Hero_Class.GOD].current();
+ 
+        uint tokenId = _heroTokenIds.current();
+        string memory where = Strings.toString(class_id);
+
+        _mint(msg.sender, tokenId,1,"");
+
+        _setURI(string( abi.encodePacked( super.uri(tokenId),"God/","2",where ,".json")));
+        NFT memory new_hero = NFT(Hero_Class.GOD,1,100,false);
+        hero_collection.push(new_hero);
+        heroTokenId_ToNFT[tokenId] = new_hero;
+        Hero_AtAddress[msg.sender].push(tokenId);
+        heroTokenId_ToOwner[tokenId] = msg.sender;
+        _heroTokenIds.increment();
+
+        heroClass_amountMinted[Hero_Class.GOD].increment();
+
+        
+    }
+    // superhuman
+    function heroMint_Superhuman() external {   
+        // e.g. the buyer wants 100 tokens, needs to send 500 wei
+        //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
+        uint class_id = heroClass_amountMinted[Hero_Class.SUPERHUMAN].current();
+        uint tokenId = _heroTokenIds.current();
+        string memory where = Strings.toString(class_id);
+
+        _mint(msg.sender, tokenId,1,"");
+
+        _setURI(string( abi.encodePacked( super.uri(tokenId),"Superhuman/","3",where ,".json")));
+        NFT memory new_hero = NFT(Hero_Class.SUPERHUMAN,1,100,false);
+        hero_collection.push(new_hero);
+        heroTokenId_ToNFT[tokenId] = new_hero;
+        Hero_AtAddress[msg.sender].push(tokenId);
+        heroTokenId_ToOwner[tokenId] = msg.sender;
+        _heroTokenIds.increment();
+        
+        heroClass_amountMinted[Hero_Class.SUPERHUMAN].increment();
+        
+    }
+    // alien
+    function heroMint_Alien() external {   
+        // e.g. the buyer wants 100 tokens, needs to send 500 wei
+        //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
+        uint class_id = heroClass_amountMinted[Hero_Class.ALIEN].current();
+        uint tokenId = _heroTokenIds.current();
+        string memory where = Strings.toString(class_id);
+
+        _mint(msg.sender, tokenId,1,"");
+
+        _setURI(string( abi.encodePacked( super.uri(tokenId),"Alien/","4",where ,".json")));
+        NFT memory new_hero = NFT(Hero_Class.ALIEN,1,100,false);
+        hero_collection.push(new_hero);
+        heroTokenId_ToNFT[tokenId] = new_hero;
+        Hero_AtAddress[msg.sender].push(tokenId);
+        heroTokenId_ToOwner[tokenId] = msg.sender;
+        _heroTokenIds.increment();
+
+        heroClass_amountMinted[Hero_Class.ALIEN].increment();
+        
+    }
+    // animal
+    function heroMint_Animal() external {   
+        // e.g. the buyer wants 100 tokens, needs to send 500 wei
+        //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
+        uint class_id = heroClass_amountMinted[Hero_Class.ANIMAL].current();
+        uint tokenId = _heroTokenIds.current();
+        string memory where = Strings.toString(class_id);
+
+        _mint(msg.sender, tokenId,1,"");
+
+        _setURI(string( abi.encodePacked( super.uri(tokenId),"Animal/","5",where ,".json")));
+        NFT memory new_hero = NFT(Hero_Class.ANIMAL,1,100,false);
+        hero_collection.push(new_hero);
+        heroTokenId_ToNFT[tokenId] = new_hero;
+        Hero_AtAddress[msg.sender].push(tokenId);
+        heroTokenId_ToOwner[tokenId] = msg.sender;
+        _heroTokenIds.increment();
+
+        heroClass_amountMinted[Hero_Class.ANIMAL].increment();
+        
+    }
+    // darklink
+    function heroMint_Darklink() external {   
+        // e.g. the buyer wants 100 tokens, needs to send 500 wei
+        //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
+        uint class_id = heroClass_amountMinted[Hero_Class.DARKLINK].current();
+        uint tokenId = _heroTokenIds.current();
+        string memory where = Strings.toString(class_id);
+
+        _mint(msg.sender, tokenId,1,"");
+
+        _setURI(string( abi.encodePacked( super.uri(tokenId),"Darklink/","6",where ,".json")));
+        NFT memory new_hero = NFT(Hero_Class.DARKLINK,1,100,false);
+        hero_collection.push(new_hero);
+        heroTokenId_ToNFT[tokenId] = new_hero;
+        Hero_AtAddress[msg.sender].push(tokenId);
+        heroTokenId_ToOwner[tokenId] = msg.sender;
+        _heroTokenIds.increment();
+
+        heroClass_amountMinted[Hero_Class.DARKLINK].increment();
         
     }
     //ITEM
@@ -237,7 +343,7 @@ contract Galaxy_heroes is ERC1155{
         return heroTokenId_ToNFT[id].attack;
     }
     //Give Item to upgrade TODO
-    function giveItem(uint heroId, uint item_inCollectionId) external isHeroOwner(heroId){
+    function giveItem(uint heroId, uint item_inCollectionId) external view isHeroOwner(heroId){
         NFT memory hero = heroTokenId_ToNFT[heroId];
         Item_Class class = getItem_inAccount_byCollectionId(item_inCollectionId);
         if(class == Item_Class.POTION){
@@ -250,10 +356,12 @@ contract Galaxy_heroes is ERC1155{
         //if(item.)
     }
     //TODO
+    /*
     function uri(uint256 id) public view override returns (string memory) {
         string memory where = Strings.toString(id);
         return string( abi.encodePacked( super.uri(id),where ,".json"));
     }
+    */
         //TODO
     function getUri(uint256 id) public view returns (string memory) {
         return string( abi.encodePacked( super.uri(id) ));
