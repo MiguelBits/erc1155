@@ -1,10 +1,10 @@
 {
-	"name": "Galaxy Duel #1",
+	"name": "Galaxy Duel #43",
 	"description": "Galaxy Duel Hero",
 	"image": "https://github.com/mcruzvas/erc1155/blob/main/metadata/0.png?raw=true",
 	"properties": {
 		"stars": "1",
 		"class": "Alien",
-		"element": "Water"
+		"element": "Wind"
 	}
 }
