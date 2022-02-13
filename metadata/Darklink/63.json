@@ -1,18 +1,10 @@
 {
-	"name": "Galaxy Duel #3",
+	"name": "Galaxy Duel #63",
 	"description": "Galaxy Duel Hero",
 	"image": "https://github.com/mcruzvas/erc1155/blob/main/metadata/0.png?raw=true",
 	"properties": {
 		"stars": "1",
-		"class": "God",
-		"attack": "103",
-		"element": "Wind",
-		"sex": "female",
-		"potion": "0",
-		"herb": "0",
-		"mystic": "0",
-		"weapon": "0",
-		"minerium": "0",
-		"nova": "0"
+		"class": "Darklink",
+		"element": "Wind"
 	}
 }

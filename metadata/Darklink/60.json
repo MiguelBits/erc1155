@@ -1,10 +1,10 @@
 {
-	"name": "Galaxy Duel #62",
+	"name": "Galaxy Duel #60",
 	"description": "Galaxy Duel Hero",
 	"image": "https://github.com/mcruzvas/erc1155/blob/main/metadata/0.png?raw=true",
 	"properties": {
 		"stars": "1",
 		"class": "Darklink",
-		"element": "Earth"
+		"element": "Water"
 	}
 }
