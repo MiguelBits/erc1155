@@ -1,0 +1,27 @@
+{
+	"name": "Superhuman #",
+	"description": "Galaxy Duel Hero",
+	"image": "https://github.com/mcruzvas/erc1155/blob/main/metadata/1.png?raw=true",
+	"properties": {
+		"stars": "1",
+		"class_traits": {
+			"class": "Darklink",
+			"attack": "123",
+			"element": "Fire",
+			"sex": "male",
+			"css": {
+				"color": "#ffffff",
+				"font-weight": "bold",
+				"text-decoration": "underline"
+			}
+		},
+		"item_boosted": {
+			"potion": "0",
+			"herb": "0",
+			"mystic": "0",
+			"weapon": "0",
+			"minerium": "0",
+			"nova": "0"
+		}
+	}
+}
