@@ -33,6 +33,7 @@ contract Galaxy_heroes is ERC1155{
 
     //NFT associated with a TokenId_            MAPPINGS
     mapping(Hero_Class => Counters.Counter) heroClass_amountMinted;
+    mapping(uint => uint) tokenId_classId;
     mapping(uint256 => string) private _tokenURIs;
     mapping(uint256 => NFT) public heroTokenId_ToNFT;
     //nft to owner
@@ -73,6 +74,8 @@ contract Galaxy_heroes is ERC1155{
         uint stars;
         uint attack;
         bool staked;
+        //element;
+        //sex;
     }
 
     //STAKE
@@ -106,18 +109,17 @@ contract Galaxy_heroes is ERC1155{
         uint class_id = heroClass_amountMinted[Hero_Class.ROBOT].current();
 
         uint tokenId = _heroTokenIds.current();
-        string memory where = Strings.toString(class_id);
-
-        _mint(msg.sender, tokenId,1,"");
-
-        _setURI(string( abi.encodePacked( super.uri(tokenId),"Robot/","1",where ,".json")));
+  
+        _mint(msg.sender, tokenId,1, "");
         NFT memory new_hero = NFT(Hero_Class.ROBOT,1,100,false);
         hero_collection.push(new_hero);
         heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
-        _heroTokenIds.increment();
+        
+        tokenId_classId[tokenId] = class_id;
 
+        _heroTokenIds.increment();
         heroClass_amountMinted[Hero_Class.ROBOT].increment();
         
     }
@@ -128,17 +130,17 @@ contract Galaxy_heroes is ERC1155{
         uint class_id = heroClass_amountMinted[Hero_Class.GOD].current();
  
         uint tokenId = _heroTokenIds.current();
-        string memory where = Strings.toString(class_id);
 
-        _mint(msg.sender, tokenId,1,"");
+        _mint(msg.sender, tokenId,1, "");
 
-        _setURI(string( abi.encodePacked( super.uri(tokenId),"God/","2",where ,".json")));
         NFT memory new_hero = NFT(Hero_Class.GOD,1,100,false);
         hero_collection.push(new_hero);
         heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
         _heroTokenIds.increment();
+        
+        tokenId_classId[tokenId] = class_id;
 
         heroClass_amountMinted[Hero_Class.GOD].increment();
 
@@ -150,18 +152,18 @@ contract Galaxy_heroes is ERC1155{
         //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
         uint class_id = heroClass_amountMinted[Hero_Class.SUPERHUMAN].current();
         uint tokenId = _heroTokenIds.current();
-        string memory where = Strings.toString(class_id);
 
-        _mint(msg.sender, tokenId,1,"");
+        _mint(msg.sender, tokenId,1, "");
 
-        _setURI(string( abi.encodePacked( super.uri(tokenId),"Superhuman/","3",where ,".json")));
         NFT memory new_hero = NFT(Hero_Class.SUPERHUMAN,1,100,false);
         hero_collection.push(new_hero);
         heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
         _heroTokenIds.increment();
-        
+                
+        tokenId_classId[tokenId] = class_id;
+
         heroClass_amountMinted[Hero_Class.SUPERHUMAN].increment();
         
     }
@@ -171,17 +173,17 @@ contract Galaxy_heroes is ERC1155{
         //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
         uint class_id = heroClass_amountMinted[Hero_Class.ALIEN].current();
         uint tokenId = _heroTokenIds.current();
-        string memory where = Strings.toString(class_id);
 
-        _mint(msg.sender, tokenId,1,"");
+        _mint(msg.sender, tokenId,1, "");
 
-        _setURI(string( abi.encodePacked( super.uri(tokenId),"Alien/","4",where ,".json")));
         NFT memory new_hero = NFT(Hero_Class.ALIEN,1,100,false);
         hero_collection.push(new_hero);
         heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
         _heroTokenIds.increment();
+        
+        tokenId_classId[tokenId] = class_id;
 
         heroClass_amountMinted[Hero_Class.ALIEN].increment();
         
@@ -192,17 +194,17 @@ contract Galaxy_heroes is ERC1155{
         //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
         uint class_id = heroClass_amountMinted[Hero_Class.ANIMAL].current();
         uint tokenId = _heroTokenIds.current();
-        string memory where = Strings.toString(class_id);
 
-        _mint(msg.sender, tokenId,1,"");
+        _mint(msg.sender, tokenId,1, ""); 
 
-        _setURI(string( abi.encodePacked( super.uri(tokenId),"Animal/","5",where ,".json")));
         NFT memory new_hero = NFT(Hero_Class.ANIMAL,1,100,false);
         hero_collection.push(new_hero);
         heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
         _heroTokenIds.increment();
+                
+        tokenId_classId[tokenId] = class_id;
 
         heroClass_amountMinted[Hero_Class.ANIMAL].increment();
         
@@ -213,17 +215,17 @@ contract Galaxy_heroes is ERC1155{
         //require(coinBalance() > 100 * coinPrice, "Need to send exact amount of wei");  
         uint class_id = heroClass_amountMinted[Hero_Class.DARKLINK].current();
         uint tokenId = _heroTokenIds.current();
-        string memory where = Strings.toString(class_id);
 
-        _mint(msg.sender, tokenId,1,"");
+        _mint(msg.sender, tokenId,1, "");
 
-        _setURI(string( abi.encodePacked( super.uri(tokenId),"Darklink/","6",where ,".json")));
         NFT memory new_hero = NFT(Hero_Class.DARKLINK,1,100,false);
         hero_collection.push(new_hero);
         heroTokenId_ToNFT[tokenId] = new_hero;
         Hero_AtAddress[msg.sender].push(tokenId);
         heroTokenId_ToOwner[tokenId] = msg.sender;
         _heroTokenIds.increment();
+        
+        tokenId_classId[tokenId] = class_id;
 
         heroClass_amountMinted[Hero_Class.DARKLINK].increment();
         
@@ -268,6 +270,7 @@ contract Galaxy_heroes is ERC1155{
 
     //GETS
     //account specific
+    //coin
     function coinBalance() public view returns(uint coins){
         return balanceOf(msg.sender,coin);
     }
@@ -342,6 +345,7 @@ contract Galaxy_heroes is ERC1155{
     function getNFT_attack(uint id) public view returns(uint attack){
         return heroTokenId_ToNFT[id].attack;
     }
+
     //Give Item to upgrade TODO
     function giveItem(uint heroId, uint item_inCollectionId) external view isHeroOwner(heroId){
         NFT memory hero = heroTokenId_ToNFT[heroId];
@@ -355,15 +359,30 @@ contract Galaxy_heroes is ERC1155{
 
         //if(item.)
     }
-    //TODO
-    /*
-    function uri(uint256 id) public view override returns (string memory) {
-        string memory where = Strings.toString(id);
-        return string( abi.encodePacked( super.uri(id),where ,".json"));
-    }
-    */
-        //TODO
-    function getUri(uint256 id) public view returns (string memory) {
-        return string( abi.encodePacked( super.uri(id) ));
+
+    function uri(uint256 id) public view virtual override returns (string memory) {
+        string memory classId = Strings.toString(tokenId_classId[id]);
+
+        if(getNFT_class(id) == Hero_Class.DARKLINK){
+            return string(abi.encodePacked("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/","Darklink/","6",classId,".json"));
+        }
+        else if(getNFT_class(id) == Hero_Class.ANIMAL){
+            return string(abi.encodePacked("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/","Animal/","5",classId,".json"));
+        }
+        else if(getNFT_class(id) == Hero_Class.ALIEN){
+            return string(abi.encodePacked("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/","Alien/","4",classId,".json"));
+        }
+        else if(getNFT_class(id) == Hero_Class.SUPERHUMAN){
+            return string(abi.encodePacked("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/","Superhuman/","3",classId,".json"));
+        }
+        else if(getNFT_class(id) == Hero_Class.GOD){
+            return string(abi.encodePacked("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/","God/","2",classId,".json"));
+        }
+        else if(getNFT_class(id) == Hero_Class.ROBOT){
+            return string(abi.encodePacked("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/","Robot/","1",classId,".json"));
+        }
+        else{
+            return string("https://i.pinimg.com/originals/fd/0c/b9/fd0cb97ac9aaa1341195b1c4ab58fb6f.png");
+        }
     }
 }
