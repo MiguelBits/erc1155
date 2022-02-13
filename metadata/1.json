@@ -5,14 +5,6 @@
 	"properties": {
 		"stars": "1",
 		"class": "Darklink",
-		"attack": "123",
-		"element": "Fire",
-		"sex": "female",
-		"potion": "0",
-		"herb": "0",
-		"mystic": "0",
-		"weapon": "0",
-		"minerium": "0",
-		"nova": "0"
+		"element": "Fire"
 	}
 }
