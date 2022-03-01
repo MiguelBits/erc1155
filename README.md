@@ -4,3 +4,4 @@
 -> item / heroes   
 -> buy hero of choosen class   
 -> dynamic metadata pointer to class   
+-> battle system
