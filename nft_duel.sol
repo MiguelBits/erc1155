@@ -8,31 +8,32 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // Helper functions OpenZeppelin provides.
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+contract Galaxy_heroes is ERC1155, ReentrancyGuard{
 
-contract Galaxy_heroes is ERC1155{
+    using SafeMath for uint;
+
     //Events
     event hasStakedChanged(bool status, uint tokenId);
-
-
+    event new_battle(uint sender, uint opponent);
 
     //ENUM
+    enum GameOutcome {
+        Fighting,
+        Draw,
+        Win,
+        Lose
+    }
     enum Hero_Class{ROBOT, GOD, SUPERHUMAN, ALIEN, ANIMAL, DARKLINK}
-    enum Item_Class{POTION, HERB, MYSTIC, WEAPON, MINERIUM, NOVA}
-    enum Item_Rarity{RED,PURPLE,PINK,BLUE,GREEN,WHITE}
     
     //CONSTANTS
     uint constant private coin = 100000;
-    uint constant private itemPotion = 0;
-    uint constant private itemHerb = 1;
-    uint constant private itemMystic= 2;
-    uint constant private itemWeapon = 3;
-    uint constant private itemMinerium = 4;
-    uint constant private itemNova = 5;
 
     NFT[] public hero_collection;
     using Counters for Counters.Counter;
     Counters.Counter private _heroTokenIds;
-    uint private _itemTokenIds;
+    Counters.Counter private _gameIds;
     address private admin;
 
     //NFT associated with a TokenId_            MAPPINGS
@@ -45,13 +46,14 @@ contract Galaxy_heroes is ERC1155{
     //nft in address
     mapping(address => uint[]) public Hero_AtAddress;
     mapping(address => uint[]) public Item_AtAddress;
-    mapping(uint => Item_Rarity) public Item_To_RarityValue;
-
+    //battle mappings
+    uint[] stakedIDs;
+    mapping (uint => Game_Duel) public games_by_id;
 
     //nft by id check end time of stake lockup
     mapping(uint => uint) public tokenId_stakeTimeEnd;
     //Price
-    mapping(uint => Item_Class) itemPrice;
+
     uint coinPrice = 5;
 
     //MODIFIERS
@@ -81,14 +83,20 @@ contract Galaxy_heroes is ERC1155{
         //element;
         //sex;
     }
-
+    
+    struct Game_Duel {
+        uint playerOne;
+        uint playerTwo;
+        GameOutcome outcome;
+    }
     //STAKE
     function stake(uint id) public isNotStaked(id) isHeroOwner(id){
         heroTokenId_ToNFT[id].staked = true;
         heroTokenId_ToNFT[id].stars += 1;
         //lockup time period
         tokenId_stakeTimeEnd[id] = block.timestamp + 600;
-
+        stakedIDs.push(id);
+        
         emit hasStakedChanged(true,id);
     }
 
@@ -97,15 +105,19 @@ contract Galaxy_heroes is ERC1155{
         require(block.timestamp > tokenId_stakeTimeEnd[id],"Need more time!");
         heroTokenId_ToNFT[id].staked = false;
         _mint(msg.sender, coin,100000000,"");
-
+        for(uint i = 0; i>stakedIDs.length-1;i++){
+            if(stakedIDs[i] == id){
+                delete stakedIDs[i];
+            }
+        }
         emit hasStakedChanged(false,id);
     }
     
     //CREATION
     constructor() ERC1155("https://raw.githubusercontent.com/mcruzvas/erc1155/main/metadata/") {
         _heroTokenIds.increment();
-        _itemTokenIds = 0;
         admin = msg.sender;
+        _gameIds.increment();
     }
 
     //MINTERS
@@ -123,27 +135,27 @@ contract Galaxy_heroes is ERC1155{
         NFT memory new_hero;
         if(class == 1){
             class_id = heroClass_amountMinted[class].current();
-            new_hero = NFT(Hero_Class.ROBOT,1,100,false);
+            new_hero = NFT(Hero_Class.ROBOT,1,500,false);
         }
         else if(class == 2){
             class_id = heroClass_amountMinted[class].current();
-            new_hero = NFT(Hero_Class.GOD,1,100,false);
+            new_hero = NFT(Hero_Class.GOD,1,500,false);
         }
         else if(class == 3){
             class_id = heroClass_amountMinted[class].current();
-            new_hero = NFT(Hero_Class.SUPERHUMAN,1,100,false);
+            new_hero = NFT(Hero_Class.SUPERHUMAN,1,500,false);
         }
         else if(class == 4){
             class_id = heroClass_amountMinted[class].current();
-            new_hero = NFT(Hero_Class.ALIEN,1,100,false);
+            new_hero = NFT(Hero_Class.ALIEN,1,500,false);
         }
         else if(class == 5){
             class_id = heroClass_amountMinted[class].current();
-            new_hero = NFT(Hero_Class.ANIMAL,1,100,false);
+            new_hero = NFT(Hero_Class.ANIMAL,1,500,false);
         }
         else if(class == 6){
             class_id = heroClass_amountMinted[class].current();
-            new_hero = NFT(Hero_Class.DARKLINK,1,100,false);
+            new_hero = NFT(Hero_Class.DARKLINK,1,500,false);
         }
         //update mappings
         hero_collection.push(new_hero);
@@ -156,43 +168,6 @@ contract Galaxy_heroes is ERC1155{
 
         heroClass_amountMinted[class].increment();
     }
-    //ITEM
-    // to use payable to buy more rare
-    function itemMint(uint itemNo) external {
-        require(heroBalance() > 0,"You need have a Hero!");
-        if(itemNo == 0){
-            _mint(msg.sender, itemPotion,1,"");
-            Item_AtAddress[msg.sender].push(itemPotion);
-            Item_To_RarityValue[itemPotion] = Item_Rarity.GREEN;
-        }
-        else if(itemNo == 1){
-            _mint(msg.sender, itemHerb,1,"");
-            Item_AtAddress[msg.sender].push(itemHerb);
-            Item_To_RarityValue[itemHerb] = Item_Rarity.GREEN;
-        }
-        else if(itemNo == 2){
-            _mint(msg.sender, itemMystic,1,"");
-            Item_AtAddress[msg.sender].push(itemMystic);
-            Item_To_RarityValue[itemMystic] = Item_Rarity.GREEN;
-        }
-        else if(itemNo == 3){
-            _mint(msg.sender, itemWeapon,1,"");
-            Item_AtAddress[msg.sender].push(itemWeapon);
-            Item_To_RarityValue[itemWeapon] = Item_Rarity.GREEN;
-        }
-        else if(itemNo == 4){
-            _mint(msg.sender, itemMinerium,1,"");
-            Item_AtAddress[msg.sender].push(itemMinerium);
-            Item_To_RarityValue[itemMinerium] = Item_Rarity.GREEN;
-        }
-        else if(itemNo == 5){
-            _mint(msg.sender, itemNova,1,"");
-            Item_AtAddress[msg.sender].push(itemNova);
-            Item_To_RarityValue[itemNova] = Item_Rarity.GREEN;
-        }
-
-
-    }
 
     //GETS
     //amounts available
@@ -201,54 +176,14 @@ contract Galaxy_heroes is ERC1155{
         return heroClass_amountMinted[class].current();
     }
     //account specific
+    function ownerOf(uint id) public view returns (address){
+        return heroTokenId_ToOwner[id];
+    }
     //coin
     function coinBalance() public view returns(uint coins){
         return balanceOf(msg.sender,coin);
     }
-    //item specific
-    function getItem_inAccount_byCollectionId(uint item_inCollectionId) public view returns(Item_Class class){
-        uint itemNo = Item_AtAddress[msg.sender][item_inCollectionId];
-        if(itemNo == 0){
-            return Item_Class.POTION;
-        }
-        else if(itemNo == 1){
-            return Item_Class.HERB;
-        }
-        else if(itemNo == 2){
-            return Item_Class.MYSTIC;
-        }
-        else if(itemNo == 3){
-            return Item_Class.WEAPON;
-        }
-        else if(itemNo == 4){
-            return Item_Class.MINERIUM;
-        }
-        else if(itemNo == 5){
-            return Item_Class.NOVA;
-        }
 
-    }
-    function Item_inAccount() public view returns(uint[] memory arr){
-        return Item_AtAddress[msg.sender];
-    }
-    function itemPotion_Balance() public view returns(uint items){
-        return balanceOf(msg.sender,itemPotion);
-    }
-    function itemHerb_Balance() public view returns(uint items){
-        return balanceOf(msg.sender,itemHerb);
-    }
-    function itemMystic_Balance() public view returns(uint items){
-        return balanceOf(msg.sender,itemMystic);
-    }
-    function itemWeapon_Balance() public view returns(uint items){
-        return balanceOf(msg.sender,itemWeapon);
-    }
-    function itemMinerium_Balance() public view returns(uint items){
-        return balanceOf(msg.sender,itemMinerium);
-    }
-    function itemNova_Balance() public view returns(uint items){
-        return balanceOf(msg.sender,itemNova);
-    }
     function heroBalance() public view returns(uint items){
         return Hero_inAccount().length;
     }
@@ -281,19 +216,13 @@ contract Galaxy_heroes is ERC1155{
     function getNFT_attack(uint id) public view returns(uint attack){
         return heroTokenId_ToNFT[id].attack;
     }
-
+        //Get all staked
+    function getStakedPopulation() public view returns(uint [] memory pop){
+        return stakedIDs;
+    }
     //Give Item to upgrade TODO
     function giveItem(uint heroId, uint item_inCollectionId) external view isHeroOwner(heroId){
-        NFT memory hero = heroTokenId_ToNFT[heroId];
-        Item_Class class = getItem_inAccount_byCollectionId(item_inCollectionId);
-        if(class == Item_Class.POTION){
-            hero.attack += 100;
-        }
-        else{
-            hero.stars ++;
-        }
-
-        //if(item.)
+        
     }
 
     function uri(uint256 id) public view virtual override returns (string memory) {
@@ -320,5 +249,118 @@ contract Galaxy_heroes is ERC1155{
         else{
             return string("https://i.pinimg.com/originals/fd/0c/b9/fd0cb97ac9aaa1341195b1c4ab58fb6f.png");
         }
+    }
+
+    function Duel(uint tokenId, uint enemyId) public isStaked(tokenId) returns(Game_Duel memory){
+        require(ownerOf(tokenId) != ownerOf(enemyId));
+
+        //game
+        GameOutcome status = GameOutcome.Fighting;
+        Game_Duel memory duel = Game_Duel(tokenId,enemyId,status);
+
+        //attack
+        uint attackPoints = 3;
+
+        uint starsPlayer = getNFT_stars(tokenId);
+        uint starsEnemy = getNFT_stars(enemyId);
+
+        Hero_Class playerClass = getNFT_class(tokenId);
+        Hero_Class enemyClass = getNFT_class(enemyId);
+
+        uint attackPlayer = getNFT_attack(tokenId);
+        uint attackEnemy = getNFT_attack(enemyId);
+
+        emit new_battle(tokenId,enemyId);
+
+        //decision
+        if(starsPlayer > starsEnemy){
+            attackPoints += 1;
+        }
+        else if(starsPlayer < starsEnemy){
+            attackPoints -= 1;
+        }
+
+        if(playerClass == Hero_Class.DARKLINK){
+            if(enemyClass == Hero_Class.ANIMAL){
+                attackPoints -= 1;
+            }
+            else if(enemyClass == Hero_Class.ROBOT){
+                attackPoints += 1;
+            }
+        }
+        else if(playerClass == Hero_Class.ANIMAL){
+            if(enemyClass == Hero_Class.ALIEN){
+                attackPoints -= 1;
+            }
+            else if(enemyClass == Hero_Class.DARKLINK){
+                attackPoints += 1;
+            }
+        }
+        else if(playerClass == Hero_Class.ALIEN){
+            if(enemyClass == Hero_Class.SUPERHUMAN){
+                attackPoints -= 1;
+            }
+            else if(enemyClass == Hero_Class.ANIMAL){
+                attackPoints += 1;
+            }
+        }
+        else if(playerClass == Hero_Class.SUPERHUMAN){
+            if(enemyClass == Hero_Class.GOD){
+                attackPoints -= 1;
+            }
+            else if(enemyClass == Hero_Class.ALIEN){
+                attackPoints += 1;
+            }
+        }
+        else if(playerClass == Hero_Class.GOD){
+            if(enemyClass == Hero_Class.ROBOT){
+                attackPoints -= 1;
+            }
+            else if(enemyClass == Hero_Class.SUPERHUMAN){
+                attackPoints += 1;
+            }
+        }
+        else if(playerClass == Hero_Class.ROBOT){
+            if(enemyClass == Hero_Class.DARKLINK){
+                attackPoints -= 1;
+            }
+            else if(enemyClass == Hero_Class.GOD){
+                attackPoints += 1;
+            }
+        }
+        // outcome
+        if(attackPlayer > 2){
+            uint new_attackPlayer = attackPlayer + (attackPoints*100);
+            if(new_attackPlayer > attackEnemy){
+                status = GameOutcome.Win;
+            }
+            else if(new_attackPlayer < attackEnemy){
+                status = GameOutcome.Lose;
+            }
+            else{
+                status = GameOutcome.Draw;
+            }
+        }
+        else if(attackPlayer == 2){
+            if(attackPlayer > attackEnemy){
+                status = GameOutcome.Win;
+            }
+            else if(attackPlayer < attackEnemy){
+                status = GameOutcome.Lose;
+            }
+            else{
+                status = GameOutcome.Draw;
+            }
+        }
+        else{
+            status = GameOutcome.Lose;
+        }
+        //store result
+        uint current = _gameIds.current();
+        _gameIds.increment();
+        duel.outcome = status;
+        games_by_id[current] = duel;
+
+        return duel;
     }
 }
